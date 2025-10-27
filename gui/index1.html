@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mini AlphaZero Chess</title> <!-- Chessboard CSS -->
+    <link rel="stylesheet" href="chessboardjs/css/chessboard-1.0.0.min.css" />
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            background: #1e1e1e;
+            color: #fce9ec;
+            font-family: "Segoe UI", sans-serif;
+            gap: 40px;
+            margin-top: 30px;
+        }
+
+        #board {
+            width: 440px;
+        }
+
+        .main-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .clock {
+            font-size: 1.2em;
+            font-weight: bold;
+            background: #2e2e2e;
+            padding: 6px 18px;
+            border-radius: 10px;
+            width: 120px;
+            text-align: center;
+        }
+
+        .captured {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #2b2b2b;
+            border-radius: 6px;
+            padding: 4px;
+            gap: 3px;
+            width: 250px;
+            min-height: 28px;
+        }
+
+        .captured img {
+            width: 20px;
+            height: 20px;
+        }
+
+        #status {
+            font-size: 1em;
+            text-align: center;
+            margin-top: 6px;
+        }
+
+        .right-panel {
+            width: 260px;
+            background: #2e2e2e;
+            border-radius: 8px;
+            overflow: hidden;
+            padding: 10px;
+            height: fit-content;
+            max-height: 600px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            font-size: 0.9em;
+            color: #fce9ec;
+        }
+
+        th,
+        td {
+            border-bottom: 1px solid #444;
+            padding: 4px 6px;
+            text-align: center;
+        }
+
+        th {
+            background: #3a3a3a;
+            font-weight: 600;
+        }
+
+        #resetBtn {
+            padding: 6px 14px;
+            background: #9a001a;
+            border: none;
+            border-radius: 5px;
+            color: #fce9ec;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        #resetBtn:hover {
+            background: #fce9ec;
+            color: black;
+        }
+
+        .player-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .history-wrapper {
+        overflow-y: auto;
+        flex-grow: 1;
+        margin-bottom: 10px;
+        }
+
+        .game-controls {
+            margin-top: 20px;
+            padding-top: 10px;
+            border-top: 1px solid #444;
+        }
+
+        .color-select {
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+
+        #startBtn {
+            padding: 6px 14px;
+            background: #9a001a;
+            border: none;
+            border-radius: 5px;
+            color: #fce9ec;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        #startBtn:hover {
+            background: #fce9ec;
+            color: #9a001a;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="main-panel">
+        <div id="topRow" class = "player-row">
+            <div id="capturedBlack" class="captured"></div>
+            <div class="clock" id="blackClock">3:00</div>
+        </div>
+
+        <div id="board"></div>
+        
+        <div id = "bottomRow" class="player-row">
+            <div id="capturedWhite" class="captured"></div>
+            <div class="clock" id="whiteClock">3:00</div>
+        </div>
+        
+        <div id="status"></div>
+
+    </div>
+
+    <div class="right-panel">
+        <div class = "history-wrapper">
+            <table id="moveHistory">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>White</th>
+                        <th>t</th>
+                        <th>Black</th>
+                        <th>t</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+
+        <div class = "game-controls">
+            <div class="color-select">
+                <label> I play as:</label>
+                <div>
+                    <input type="radio" name="color" value="white" checked /> White
+                    <input type="radio" name="color" value="black" /> Black
+                    <input type="radio" name="color" value="random" /> Random
+    
+                </div>
+            </div>
+            <button id="startBtn">Start Game</button>
+        </div>
+    </div> 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Chessboard.js -->
+    <script src="chessboardjs/js/chessboard-1.0.0.min.js"></script> <!-- Chess.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script> <!-- Custom Script -->
+    <script src="script.js"></script>
+</body>
+        
+</html>
