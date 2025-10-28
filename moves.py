@@ -19,6 +19,17 @@ class Move:
     is_castling: bool = False
     is_double_push: bool = False
 
+    def uci(self):
+        files = "abcdefgh"
+        ranks = "12345678"
+        f_from = files[self.from_sq % 8]
+        r_from = ranks[self.from_sq // 8]
+        f_to = files[self.to_sq % 8]
+        r_to = ranks[self.to_sq // 8]
+        promo = ""
+        if self.promotion is not None:
+            promo = "qrbn"[self.promotion]  # hoặc tự chỉnh nếu bạn có mapping khác
+        return f"{f_from}{r_from}{f_to}{r_to}{promo}"
 
 def _iter_bits(bb: int):
     while bb:
@@ -375,3 +386,4 @@ def generate_legal_moves(pos: 'Position') -> List[Move]:
             if not is_square_attacked_by(BLACK, king_sq, after):
                 legal.append(mv)
     return legal
+
