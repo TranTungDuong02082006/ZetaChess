@@ -24,7 +24,10 @@ Một kỹ thuật cắt tỉa mạnh mẽ dựa trên giả định rằng bỏ
 
 **Cách triển khai trong ZetaChess:**
 - Áp dụng ở độ sâu > 2 và khi bên đi không bị chiếu
-- Giảm độ sâu tìm kiếm: $R = \begin{cases} 3 & \text{if } depth \geq 6 \\ 2 & \text{if } depth < 6 \end{cases}$
+- Giảm độ sâu tìm kiếm:
+<p align="center">
+    <img src="https://latex.codecogs.com/png.latex?\dpi{150}\color{white}&space;R&space;=&space;\begin{cases}&space;3&space;&&space;\text{if&space;}&space;depth&space;\geq&space;6&space;\\&space;2&space;&&space;\text{if&space;}&space;depth&space;<&space;6&space;\end{cases}" alt="Null Move Pruning Formula"/>
+  </p>
 - Chỉ áp dụng khi vị trí có đủ vật chất (tránh các vị trí endgame)
 - Verification search với độ sâu giảm để tránh zugzwang
 ```python
