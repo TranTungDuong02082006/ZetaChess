@@ -59,19 +59,21 @@ async function requestBotMove() {
   statusEl.textContent = "Bot is thinking...";
 
   try {
+    console.log("Sending request to bot with FEN:", fen);
     const response = await fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ fen, method: "best" }),
     });
-
+    console.log("Response received from bot");
+    console.log("Received response from bot:", response);
     if (!response.ok) {
       statusEl.textContent = `Error: HTTP status ${response.status}. Cannot reach API server.`;
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-
+    console.log("Parsing bot response as JSON");
     const data = await response.json();
-
+    console.log("Bot response data:", data);
     if (data.status === "ok" && data.move) {
       const botMove = game.move(data.move, { sloppy: true });
       updateCapturedPieces(botMove);

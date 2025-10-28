@@ -1,8 +1,8 @@
 from typing import Tuple
 
 WHITE, BLACK = 0, 1
-from .attacks import KNIGHT_ATTACKS, KING_ATTACKS, rook_attacks, bishop_attacks, queen_attacks
-from .moves import is_square_attacked_by
+from attacks import KNIGHT_ATTACKS, KING_ATTACKS, rook_attacks, bishop_attacks, queen_attacks
+from moves import is_square_attacked_by
 
 # Piece values (centipawns) indexed by base type: P, N, B, R, Q, K
 PIECE_VALUES = [100, 320, 330, 500, 900, 0]
@@ -275,8 +275,8 @@ def apply_move_eval_delta(pos, mv, mg: int, eg: int, phase: int) -> Tuple[int, i
     return new_mg, new_eg, new_phase
 
 from typing import Optional, Tuple
-from .attacks import PAWN_ATTACKS, KNIGHT_ATTACKS, KING_ATTACKS, rook_attacks, bishop_attacks, queen_attacks
-from .constants import WHITE, BLACK
+from attacks import PAWN_ATTACKS, KNIGHT_ATTACKS, KING_ATTACKS, rook_attacks, bishop_attacks, queen_attacks
+from constants import WHITE, BLACK
 
 # Ánh xạ side -> (start_idx, end_idx) cho các bitboards của bên đó
 SIDE_PIECES = {

@@ -1,8 +1,8 @@
 from typing import Optional
 from dataclasses import dataclass
 
-from .zobrist import Zobrist
-from .eval import eval_components, apply_move_eval_delta
+from zobrist import Zobrist
+from eval import eval_components, apply_move_eval_delta
 
 WHITE, BLACK = 0, 1
 

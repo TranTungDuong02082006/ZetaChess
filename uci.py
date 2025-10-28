@@ -3,10 +3,10 @@ import time
 import threading
 from typing import Optional
 
-from .position import Position
-from .search import Search, MATE_SCORE
-from .moves import Move, generate_legal_moves
-from . import INITIAL_FEN
+from position import Position
+from search import Search, MATE_SCORE
+from moves import Move, generate_legal_moves
+import INITIAL_FEN
 
 
 def move_to_uci(m: Move) -> str:

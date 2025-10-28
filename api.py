@@ -1,15 +1,16 @@
+import traceback  # Import traceback để in lỗi chi tiết
 from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import Optional
 from fastapi.middleware.cors import CORSMiddleware
 
-from .position import Position
-from .moves import generate_legal_moves, Move
-from .search import Search
-from .eval import evaluate
+from position import Position
+from moves import generate_legal_moves, Move
+from search import Search
+from eval import evaluate
 
 app = FastAPI(title="ZetaChess API", version="1.0")
-
+searcher = Search()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -22,7 +23,6 @@ class FenRequest(BaseModel):
     fen: str
     depth: Optional[int] = 3
     method: Optional[str] = "best"  # "best" | "random"
-
 
 @app.get("/")
 def root():
@@ -58,8 +58,19 @@ def get_move(request: FenRequest):
 
     # Best move (search)
     depth = max(1, request.depth or 3)
-    searcher = Search()
-    best_move,best_eval,_ = searcher.search(pos, depth)
+    
+    # === KHỐI DEBUG ĐƯỢC THÊM VÀO ===
+    try:
+        best_move, best_eval, _ = searcher.search(pos, depth)
+    except Exception as e:
+        tb_str = traceback.format_exc()
+        # In lỗi ra terminal của uvicorn
+        print(f"!!!!!!!!!!!!!!! LỖI TRONG HÀM SEARCH !!!!!!!!!!!!!!!")
+        print(tb_str)
+        print(f"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        # Trả lỗi chi tiết về cho frontend
+        return {"status": "error", "reason": f"Search failed: {e}", "traceback": tb_str}
+    # ==================================
 
     if best_move is None:
         return {"status": "error", "reason": "No move found"}

@@ -1,14 +1,14 @@
 from dataclasses import dataclass
 from typing import List, Optional, TYPE_CHECKING
 
-from .constants import WHITE, BLACK, CR_WK, CR_WQ, CR_BK, CR_BQ
-from .attacks import KNIGHT_ATTACKS, KING_ATTACKS, PAWN_ATTACKS, rook_attacks, bishop_attacks, queen_attacks
+from constants import WHITE, BLACK, CR_WK, CR_WQ, CR_BK, CR_BQ
+from attacks import KNIGHT_ATTACKS, KING_ATTACKS, PAWN_ATTACKS, rook_attacks, bishop_attacks, queen_attacks
 
 if TYPE_CHECKING:
     from .position import Position
 
 
-@dataclass
+@dataclass(frozen=True)
 class Move:
     from_sq: int
     to_sq: int

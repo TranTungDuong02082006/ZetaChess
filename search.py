@@ -5,9 +5,9 @@ from dataclasses import dataclass
 from typing import Optional, List, Callable
 import time
 
-from .constants import WHITE, BLACK
-from .moves import Move, generate_legal_moves, is_square_attacked_by
-from .eval import evaluate, PIECE_VALUES, see # <-- THÊM 'see' VÀO IMPORT
+from constants import WHITE, BLACK
+from moves import Move, generate_legal_moves, is_square_attacked_by
+from eval import evaluate, PIECE_VALUES, see # <-- THÊM 'see' VÀO IMPORT
 
 MATE_SCORE = 1000000
 EXACT, LOWER, UPPER = 0, 1, 2
