@@ -273,3 +273,134 @@ def apply_move_eval_delta(pos, mv, mg: int, eg: int, phase: int) -> Tuple[int, i
     new_eg = eg + eg_delta
     new_phase = max(0, min(MAX_PHASE, phase + phase_delta))
     return new_mg, new_eg, new_phase
+
+from typing import Optional, Tuple
+from .attacks import PAWN_ATTACKS, KNIGHT_ATTACKS, KING_ATTACKS, rook_attacks, bishop_attacks, queen_attacks
+from .constants import WHITE, BLACK
+
+# Ánh xạ side -> (start_idx, end_idx) cho các bitboards của bên đó
+SIDE_PIECES = {
+    WHITE: (0, 6), # WP, WN, WB, WR, WQ, WK
+    BLACK: (6, 12) # BP, BN, BB, BR, BQ, BK
+}
+
+def _get_smallest_attacker(pos, sq: int, side: int, occ: int) -> Optional[tuple[int, int]]:
+    """
+    Tìm quân tấn công có giá trị nhỏ nhất của 'side' đến ô 'sq',
+    với 'occ' là bàn cờ (occupancy) hiện tại trong mô phỏng.
+    Trả về (piece_index, from_square) hoặc None.
+    Lưu ý: occ là occupancy *đã bị thay đổi* trong vòng lặp SEE.
+    """
+    start, end = SIDE_PIECES[side]
+
+    # 1. Tốt (Pawns)
+    pawn_idx = start
+    # Lấy các đòn tấn công của Tốt (của bên đối thủ) *vào* ô sq
+    attacks_to_sq = PAWN_ATTACKS[1 - side][sq] 
+    attackers = attacks_to_sq & pos.bitboards[pawn_idx] & occ
+    if attackers:
+        # Trả về Tốt đầu tiên tìm thấy
+        return pawn_idx, (attackers & -attackers).bit_length() - 1
+
+    # 2. Mã (Knights)
+    knight_idx = start + 1
+    attacks_to_sq = KNIGHT_ATTACKS[sq]
+    attackers = attacks_to_sq & pos.bitboards[knight_idx] & occ
+    if attackers:
+        return knight_idx, (attackers & -attackers).bit_length() - 1
+
+    # 3. Tượng (Bishops) - Quân trượt
+    bishop_idx = start + 2
+    # Lấy các đòn tấn công *từ* ô sq, với occupancy mô phỏng
+    attacks_from_sq = bishop_attacks(sq, occ)
+    attackers = attacks_from_sq & pos.bitboards[bishop_idx] & occ
+    if attackers:
+        return bishop_idx, (attackers & -attackers).bit_length() - 1
+
+    # 4. Xe (Rooks) - Quân trượt
+    rook_idx = start + 3
+    attacks_from_sq = rook_attacks(sq, occ)
+    attackers = attacks_from_sq & pos.bitboards[rook_idx] & occ
+    if attackers:
+        return rook_idx, (attackers & -attackers).bit_length() - 1
+
+    # 5. Hậu (Queens) - Quân trượt
+    queen_idx = start + 4
+    attacks_from_sq = queen_attacks(sq, occ)
+    attackers = attacks_from_sq & pos.bitboards[queen_idx] & occ
+    if attackers:
+        return queen_idx, (attackers & -attackers).bit_length() - 1
+
+    # 6. Vua (King)
+    king_idx = start + 5
+    attacks_to_sq = KING_ATTACKS[sq]
+    attackers = attacks_to_sq & pos.bitboards[king_idx] & occ
+    if attackers:
+        return king_idx, (attackers & -attackers).bit_length() - 1
+
+    return None
+
+def see(pos, mv) -> int:
+    """
+    Thực hiện Đánh giá Trao đổi Tĩnh (Static Exchange Evaluation) cho một nước đi.
+    Trả về điểm số (dương là lời, âm là lỗ).
+    """
+    gain = [0] * 32  # Một stack để lưu giá trị vật chất
+    d = 0            # Độ sâu của chuỗi trao đổi
+    
+    from_sq = mv.from_sq
+    to_sq = mv.to_sq
+    side = pos.side_to_move
+    
+    # Xử lý En Passant
+    if mv.is_en_passant:
+        captured_piece_idx = 0 if side == WHITE else 6 # Tốt của đối phương
+    else:
+        captured_piece_idx = mv.capture_piece
+
+    # Nếu không phải là nước bắt quân (ví dụ bắt Vua, hoặc lỗi)
+    if captured_piece_idx is None:
+        return 0
+        
+    # Quân cờ di chuyển ban đầu
+    attacker_piece_idx = mv.piece
+    
+    # Bàn cờ (occupancy) để mô phỏng, bắt đầu bằng cách xóa quân tấn công
+    occ = pos.all_occupancy ^ (1 << from_sq)
+    
+    # Giá trị của quân bị bắt đầu tiên
+    gain[d] = PIECE_VALUES[captured_piece_idx % 6]
+    
+    while True:
+        d += 1
+        side = 1 - side # Đổi lượt
+
+        # Tìm quân tấn công tiếp theo (giá trị nhỏ nhất)
+        attacker_data = _get_smallest_attacker(pos, to_sq, side, occ)
+        
+        if attacker_data is None:
+            break # Không còn ai bắt lại
+
+        next_attacker_piece_idx, next_from_sq = attacker_data
+        
+        # "Loại bỏ" quân tấn công khỏi bàn cờ mô phỏng
+        occ ^= (1 << next_from_sq)
+        
+        # Cập nhật gain
+        # gain[d] = (giá trị quân vừa bắt của lượt trước) - (gain của lượt trước)
+        gain[d] = PIECE_VALUES[attacker_piece_idx % 6] - gain[d-1]
+        
+        # Tối ưu hóa: nếu nước đi này lỗ và nước trước cũng lỗ,
+        # bên này sẽ chọn không bắt tiếp
+        if gain[d] < 0 and gain[d-1] < 0:
+            break
+            
+        attacker_piece_idx = next_attacker_piece_idx
+
+    # "Unroll" stack để tìm kết quả cuối cùng
+    # (Bên nào không bắt sẽ có max(0, -gain[d]))
+    while d > 1:
+        d -= 1
+        gain[d-1] = -max(-gain[d-1], gain[d])
+        
+    return gain[0]
