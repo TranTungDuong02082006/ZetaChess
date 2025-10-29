@@ -1,6 +1,3 @@
-#
-# NỘI DUNG TỆP: trantungduong02082006/zetachess/ZetaChess-dc9f7fa8911b8b45a40988ca1456053fc56ddff7/search.py
-#
 from dataclasses import dataclass
 from typing import Optional, List, Callable
 import time
