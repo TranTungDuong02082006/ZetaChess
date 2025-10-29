@@ -10,8 +10,8 @@ let playerColor = "w";
 let currentTurn = "w";
 
 // thời gian ban đầu (giây)
-let whiteTime = 180;
-let blackTime = 180;
+let whiteTime = 600;
+let blackTime = 600;
 let whiteClock;
 let blackClock ;
 let timerInterval = null;
@@ -111,8 +111,8 @@ function resetGame() {
   capturedWhite = [];
   capturedBlack = [];
   moveHistory = [];
-  whiteTime = 180;
-  blackTime = 180;
+  whiteTime = 600;
+  blackTime = 600;
   currentTurn = "w";
   moveStartTime = Date.now();
   gameStarted = false;
@@ -150,8 +150,8 @@ function startGame() {
     capturedWhite = [];
     capturedBlack = [];
     moveHistory = [];
-    whiteTime = 180;
-    blackTime = 180;
+    whiteTime = 600;
+    blackTime = 600;
     moveStartTime = Date.now();
 
     updateClockDisplay();
