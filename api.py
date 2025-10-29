@@ -8,6 +8,7 @@ from position import Position
 from moves import generate_legal_moves, Move
 from search import Search
 from eval import evaluate
+from uci import move_to_uci
 
 app = FastAPI(title="ZetaChess API", version="1.0")
 searcher = Search()
@@ -52,7 +53,7 @@ def get_move(request: FenRequest):
         return {
             "status": "ok",
             "method": "random",
-            "move": move.uci(),
+            "move": move_to_uci(move),
             "fen_after": pos.to_fen(),
         }
 
@@ -81,7 +82,7 @@ def get_move(request: FenRequest):
     return {
         "status": "ok",
         "method": "best",
-        "move": best_move.uci(),
+        "move": move_to_uci(best_move),
         "fen_after": pos.to_fen(),
         "eval": best_eval,
         "static_eval": static_eval,
